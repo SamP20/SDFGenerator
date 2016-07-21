@@ -1,6 +1,4 @@
 import numpy as np
-from bezier import CubicBezier
-from drawing import Grid
 import matplotlib.pyplot as plt
 from fontTools.ttLib import TTFont
 from bitmapPen import BitmapPen
@@ -13,18 +11,18 @@ if __name__ == '__main__':
     font = TTFont(argv[1])
     glyf = font['glyf']['ampersand']
     glyf.getCoordinates(font['glyf'])
-    pen = BitmapPen(font['glyf'], glyf.xMin, glyf.yMin, glyf.xMax, glyf.yMax)
+    pen = BitmapPen(font['glyf'], glyf.xMin, glyf.yMin, glyf.xMax, glyf.yMax, 64, 64)
     glyf.draw(pen, font['glyf'])
     
-    scaled = ScaledBitmap(64,64)
-    scaled.loadBitmap(pen.getBitmap())
+    #scaled = ScaledBitmap(64,64)
+    #scaled.loadBitmap(pen.getBitmap())
     
     #g = Grid(64,64,glyf.xMin, glyf.xMax, glyf.yMin, glyf.yMax)
     #bz = CubicBezier((0.5,0.2),(0.8,0.4), (0.7,0.9))
     #g.draw_curve(bz)
     #bz = CubicBezier((0.7,0.9),(0.5,0.4), (0.3,0.9))
     #g.draw_curve(bz)
-    png.from_array(scaled.bitmap, 'L').save("export.png")
-    plt.imshow(scaled.bitmap, cmap='Greys', vmin=0, vmax=255)
+    png.from_array(pen.getBitmap(), 'L').save("temp/export.png")
+    plt.imshow(pen.getBitmap(), cmap='Greys', vmin=0, vmax=255)
     plt.colorbar()
     plt.show()

@@ -3,18 +3,18 @@ import numpy as np
 
 class BitmapPen(BasePen):
     """This class draws a bitmap to a numpy array using horizontal scanlines"""
-    def __init__(self, glyphSet, xmin, ymin, xmax, ymax):
+    def __init__(self, glyphSet, xmin, ymin, xmax, ymax, width, height):
         super().__init__(glyphSet)
-        self.offset = np.array([xmin-1,ymin-1])
-        self.size = np.array([xmax+2,ymax+2])-self.offset
-        self.resetBitmap()
-        
-    def resetBitmap(self):
-        self.bitmap = np.zeros(self.size[::-1], dtype=np.uint8)
-        
+        self.offset = np.array([xmin,ymin])
+        self.size = np.array([xmax+1,ymax+1])-self.offset
+        self.resetBitmap(width, height)
+
+    def resetBitmap(self, width, height):
+        self.bitmap = np.zeros((height, width), dtype=np.uint8)
+
     def getBitmap(self):
-        return self.bitmap!=0
-        
+        return np.where(self.bitmap != 0, 255, 0).astype(np.uint8)
+
     def _moveTo(self, pt):
         pass
 
@@ -102,8 +102,8 @@ class BitmapPen(BasePen):
                 self.bitmap[y,xt:] += delta
 		
     def _transform(self, pt):
-        return (pt[0]-self.offset[0], pt[1]-self.offset[1])
-        
+        bmpSize = self.bitmap.shape
+        return ((pt[0]-self.offset[0])*bmpSize[1]/self.size[0], (pt[1]-self.offset[1])*bmpSize[0]/self.size[1])
 
     def addComponent(self, glyphName, transformation):
         """This default implementation simply transforms the points
